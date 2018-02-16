@@ -52,7 +52,7 @@ public final class StringsParser: Parser {
     }
 
     tables[name] = try dict.map { key, translation in
-      try Entry(key: key, translation: translation)
+      try Entry(key: key.lowercased(), translation: translation)
     }
   }
 
@@ -97,7 +97,16 @@ public final class StringsParser: Parser {
   public struct Entry {
     let key: String
     var keyStructure: [String] {
-        return key.components(separatedBy: CharacterSet(charactersIn: "."))
+      var components: [String] = key.components(separatedBy: CharacterSet(charactersIn: "._")).filter { $0.count > 0 }
+      components = components.map {
+        switch $0.lowercased() { // Change names that will cause issues in Xcode
+        case "type":
+          return "ttyyppee"
+        default:
+          return $0
+        }
+      }
+      return components
     }
     let translation: String
     let types: [PlaceholderType]
